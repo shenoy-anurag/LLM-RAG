@@ -62,7 +62,7 @@ def generate(state: State):
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     messages = PROMPT.invoke(
         {"question": state["question"], "context": docs_content})
-    print(messages)
+    # print(messages)
     stream = LLM.stream(messages)
     return stream
 
@@ -75,12 +75,22 @@ def generate_chunks(stream: BaseMessageChunk):
 
 def generate_text_chunks(stream: BaseMessageChunk):
     for chunk in stream:
+        # print(message_to_dict(chunk))
         res = message_to_dict(chunk)['data']['content']
         yield res
+    yield "[END]"
 
 
-def retrieve_and_generate(user_prompt, tenant=None):
-    state = {'question': user_prompt, 'context': None, 'answer': ''}
+def generate_text_chunks_socket(stream: BaseMessageChunk):
+    for chunk in stream:
+        # print(message_to_dict(chunk))
+        res = message_to_dict(chunk)['data']['content']
+        yield res
+    yield "[END]"
+
+
+def retrieve_and_generate(prompt, tenant=None):
+    state = {'question': prompt, 'context': None, 'answer': ''}
     if tenant:
         state.update({'tenant': tenant})
 
