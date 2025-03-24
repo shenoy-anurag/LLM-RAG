@@ -1,43 +1,47 @@
-FROM python:3.12.9
+FROM python:3.12.9-alpine AS builder
 
+# Don't buffer `stdout`:
 ENV PYTHONUNBUFFERED=1
+# Don't create `.pyc` files:
+ENV PYTHONDONTWRITEBYTECODE=1
 
-WORKDIR /app/
+WORKDIR /app
+ADD pyproject.toml poetry.lock /app/
 
-# Install uv
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
-COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /uvx /bin/
+RUN apk add build-base libffi-dev curl
 
-# Place executables in the environment at the front of the path
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#using-the-environment
+# # Rust Compiler Installation
+# Get Rust; NOTE: using sh for better compatibility with other base images
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+# Add .cargo/bin to PATH
+RUN echo '. $HOME/.cargo/env' >> $HOME/.bashrc
+ENV PATH="/root/.cargo/bin:${PATH}"
+# Check cargo is visible
+RUN cargo --help
+RUN rustc --version
+
+# Install Poetry
+RUN pip install poetry
+RUN poetry config virtualenvs.in-project true
+# Install Dependencies
+RUN poetry install --no-ansi --without dev
+
+RUN ls -a /app/
+
+# ---
+
+FROM python:3.12.9-alpine
+WORKDIR /app
+
+RUN apk add libgcc
+
+COPY --from=builder /app /app
+COPY --from=builder /app/.venv/lib/python3.12/site-packages/ /app/.venv/lib/python3.12/site-packages/
+ADD . /app
+
 ENV PATH="/app/.venv/bin:$PATH"
-
-# Compile bytecode
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#compiling-bytecode
-ENV UV_COMPILE_BYTECODE=1
-
-# uv Cache
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#caching
-ENV UV_LINK_MODE=copy
-
-# Install dependencies
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project
 
 ENV PYTHONPATH=/app
 
-COPY ./scripts /app/scripts
-
-COPY ./pyproject.toml ./uv.lock ./alembic.ini /app/
-
-COPY ./app /app/app
-
-# Sync the project
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync
-
+EXPOSE 8000
 CMD ["fastapi", "run", "--workers", "4", "app/main.py"]

@@ -1,0 +1,83 @@
+services:
+  ragbot_backend:
+    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    container_name: ragbot_backend
+    restart: always
+    build:
+      context: ./backend
+    # entrypoint: ./entrypoint.sh
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    environment:
+      - DOMAIN=${DOMAIN}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
+      - SECRET_KEY=${SECRET_KEY}
+      - FIRST_SUPERUSER=${FIRST_SUPERUSER}
+      - FIRST_SUPERUSER_PASSWORD=${FIRST_SUPERUSER_PASSWORD}
+      - FIRST_SUPERUSER_FIRST_NAME=${FIRST_SUPERUSER_FIRST_NAME}
+      - FIRST_SUPERUSER_LAST_NAME=${FIRST_SUPERUSER_LAST_NAME}
+      - JWT_USER_FIRST_NAME=${JWT_USER_FIRST_NAME}
+      - JWT_USER_LAST_NAME=${JWT_USER_LAST_NAME}
+      - JWT_USER=${JWT_USER}
+      - JWT_USER_PASSWORD=${JWT_USER_PASSWORD}
+      - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME}
+      - OPENAI_EMBEDDINGS_NAME=${OPENAI_EMBEDDINGS_NAME}
+      - QDRANT_COLLECTION_NAME=${QDRANT_COLLECTION_NAME}
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - QDRANT_URL=${QDRANT_URL}
+      - TIME_ZONE=${TIME_ZONE}
+    networks:
+      - llm_network
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   ports:
+  #     - 11434:11434
+  #   volumes:
+  #     - ollama:/root/.ollama
+  #   container_name: ollama
+  #   pull_policy: always
+  #   tty: true
+  #   # restart: always
+  #   environment:
+  #     - OLLAMA_KEEP_ALIVE=24h
+  #     - OLLAMA_HOST=0.0.0.0
+  #   networks:
+  #     - llm_network
+
+  #  memcached:
+  #    image: memcached:latest
+  #    container_name: memcached
+  #    command: "-I 15M"
+  #    ports:
+  #      - "11211:11211"
+  #    networks:
+  #      - llm_network
+
+
+  # frontend:
+  #   build:
+  #     context: frontend
+  #     target: development
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./frontend/src:/code/src
+  #     - /code/node_modules
+  #   networks:
+  #     - llm_network
+  #   # depends_on:
+  #     # - backend
+
+  # volumes:
+  # ollama:
+  #   driver: local
+
+networks:
+  llm_network:
+    name: llm_network
+    driver: bridge
