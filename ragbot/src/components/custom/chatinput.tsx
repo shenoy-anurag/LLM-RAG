@@ -15,14 +15,14 @@ interface ChatInputProps {
 
 const suggestedActions = [
     {
-        title: 'Which is the hottest planet',
-        label: 'in our solar system?',
-        action: 'Which is the hottest planet in our solar system?',
+        title: 'Should I go',
+        label: 'gluten-free?',
+        action: 'Should I go gluten-free?',
     },
     {
-        title: 'Tell me a fun fact',
-        label: 'about the Sun',
-        action: 'Tell me an interesting fact about the Sun',
+        title: 'Is a daily glass of ',
+        label: 'wine healthy?',
+        action: 'Is a daily glass of wine healthy?',
     },
 ];
 

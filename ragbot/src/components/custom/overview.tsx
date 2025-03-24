@@ -20,15 +20,14 @@ export const Overview = () => {
         </p>
         <p>
           Welcome to my RAG chatbot!<br/>
-          You can ask the bot questions about our solar system, <br/> 
-          outer space, and the universe, <br/> 
+          Ask any health and medical related questions, <br/> 
           and it'll answer them for you.
         </p>
         <p>
-          Made possible by the magic of Vector Databases, such as <strong>Weaviate</strong>,<br/>
-          open-source LLMs like <strong>Llama 3.2</strong>, 
-          easy deployment with <strong>Ollama</strong>, <br/> 
-          and a framework such as <strong>LangChain</strong>.
+          Made possible by the magic of Vector Databases (<strong>Qdrant</strong>),<br/>
+          LLMs like OpenAI's <strong>4o-mini</strong>, <br/>
+          and <strong>LangChain</strong> to perform/manage the retrieval,  <br/>
+          augmentation (Prompt Engineering) and generation.
         </p>
       </div>
     </motion.div>

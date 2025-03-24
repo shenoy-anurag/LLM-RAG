@@ -1,11 +1,12 @@
-import { ChatInput } from "@/components/custom/chatinput";
-import { PreviewMessage, ThinkingMessage } from "../../components/custom/message";
+import { useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
+import { PreviewMessage, ThinkingMessage } from "@/components/custom/message";
 import { useScrollToBottom } from '@/components/custom/use-scroll-to-bottom';
-import { useState, useRef } from "react";
-import { message } from "../../interfaces/interfaces"
+import { ChatInput } from "@/components/custom/chatinput";
 import { Overview } from "@/components/custom/overview";
 import { Header } from "@/components/custom/header";
-import { v4 as uuidv4 } from 'uuid';
+import { Separator } from "@/components/ui/separator";
+import { message } from "@/interfaces/interfaces"
 
 // const socket = new WebSocket("ws://localhost:8000/api/v1/chat/ws"); //change to your websocket endpoint
 
@@ -131,6 +132,7 @@ export function Chat() {
   return (
     <div className="flex flex-col min-w-0 h-dvh bg-background">
       <Header />
+      <Separator orientation="horizontal"/>
       <div className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4" ref={messagesContainerRef}>
         {messages.length == 0 && <Overview />}
         {messages.map((message, index) => (
