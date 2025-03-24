@@ -1,6 +1,6 @@
 services:
   ragbot_backend:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    image: kardashevthree/ragbot:latest
     container_name: ragbot_backend
     restart: always
     build:
