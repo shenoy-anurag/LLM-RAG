@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { PreviewMessage, ThinkingMessage } from "@/components/custom/message";
 import { useScrollToBottom } from '@/components/custom/use-scroll-to-bottom';
@@ -7,6 +7,7 @@ import { Overview } from "@/components/custom/overview";
 import { Header } from "@/components/custom/header";
 import { Separator } from "@/components/ui/separator";
 import { message } from "@/interfaces/interfaces"
+import { AlertDestructive } from "@/components/custom/error-alert";
 
 // const socket = new WebSocket("ws://localhost:8000/api/v1/chat/ws"); //change to your websocket endpoint
 
@@ -15,6 +16,37 @@ export function Chat() {
   const [messages, setMessages] = useState<message[]>([]);
   const [question, setQuestion] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [isHealthy, setIsHealthy] = useState<"unset" | "down" | "live">("unset");
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Warm up the backend serverless deployment.
+    const checkHealth = async () => {
+      const API_URL_HEALTH_CHECK = import.meta.env.VITE_PUBLIC_API_URL + "/health-check";
+      try {
+        const response = await fetch(API_URL_HEALTH_CHECK);
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const result = await response.json();
+        if (!result) setIsHealthy("down");
+        else setIsHealthy("live");
+      } catch (error) {
+        setIsHealthy("down");
+        console.log(error);
+      } finally {
+        console.log("Health-Checked");
+      }
+    };
+
+    checkHealth();
+  }, []);
+
+  useEffect(() => {
+    if (isHealthy === "down") setShowAlert(true);
+    else setShowAlert(false);
+  }, [isHealthy]);
 
   // const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(null);
 
@@ -134,7 +166,10 @@ export function Chat() {
   return (
     <div className="flex flex-col min-w-0 h-dvh bg-background">
       <Header />
-      <Separator orientation="horizontal"/>
+      <Separator orientation="horizontal" />
+      <div className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 mt-4 w-full md:max-w-3xl">
+        {showAlert && <AlertDestructive />}
+      </div>
       <div className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4" ref={messagesContainerRef}>
         {messages.length == 0 && <Overview />}
         {messages.map((message, index) => (
