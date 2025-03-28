@@ -78,7 +78,7 @@ def generate_text_chunks(stream: BaseMessageChunk):
         # print(message_to_dict(chunk))
         res = message_to_dict(chunk)['data']['content']
         yield res
-    yield "[END]"
+    # yield "[END]"
 
 
 def generate_text_chunks_socket(stream: BaseMessageChunk):

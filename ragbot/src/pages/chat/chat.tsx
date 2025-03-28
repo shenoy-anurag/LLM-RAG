@@ -108,10 +108,12 @@ export function Chat() {
         done = readerDone;
         const textPart = decoder.decode(value, { stream: true });
 
-        if (textPart.includes("[END]")) {
-          done = true;
-          continue;
-        }
+        if (done) break;
+
+        // if (textPart.includes("[END]") || done === true) {
+        //   done = true;
+        //   continue;
+        // }
         setMessages(prev => {
           const lastMessage = prev[prev.length - 1];
           const newContent = lastMessage?.role === "assistant"

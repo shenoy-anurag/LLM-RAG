@@ -1,15 +1,15 @@
 services:
-  ragbot_backend:
-    image: kardashevthree/ragbot:latest
-    container_name: ragbot_backend
-    restart: always
+  aws_ragbot_backend:
+    image: anuragsprojects/ragbot:latest
+    container_name: aws_ragbot_backend
+    restart: no
     build:
       context: ./backend
-    # entrypoint: ./entrypoint.sh
+      dockerfile: ./Dockerfile.aws.lambda
     ports:
       - 8000:8000
     env_file:
-      - .env
+      - ./backend/.env
     environment:
       - DOMAIN=${DOMAIN}
       - ENVIRONMENT=${ENVIRONMENT}
@@ -33,6 +33,42 @@ services:
       - TIME_ZONE=${TIME_ZONE}
     networks:
       - llm_network
+
+  # ragbot_backend:
+  #   image: kardashevthree/ragbot:latest
+  #   container_name: ragbot_backend
+  #   restart: no
+  #   build:
+  #     context: ./backend
+  #     dockerfile: ./Dockerfile
+  #   ports:
+  #     - 8000:8000
+  #   env_file:
+  #     - ./backend/.env
+  #   environment:
+  #     - DOMAIN=${DOMAIN}
+  #     - ENVIRONMENT=${ENVIRONMENT}
+  #     - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
+  #     - SECRET_KEY=${SECRET_KEY}
+  #     - FIRST_SUPERUSER=${FIRST_SUPERUSER}
+  #     - FIRST_SUPERUSER_PASSWORD=${FIRST_SUPERUSER_PASSWORD}
+  #     - FIRST_SUPERUSER_FIRST_NAME=${FIRST_SUPERUSER_FIRST_NAME}
+  #     - FIRST_SUPERUSER_LAST_NAME=${FIRST_SUPERUSER_LAST_NAME}
+  #     - JWT_USER_FIRST_NAME=${JWT_USER_FIRST_NAME}
+  #     - JWT_USER_LAST_NAME=${JWT_USER_LAST_NAME}
+  #     - JWT_USER=${JWT_USER}
+  #     - JWT_USER_PASSWORD=${JWT_USER_PASSWORD}
+  #     - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+  #     - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME}
+  #     - OPENAI_EMBEDDINGS_NAME=${OPENAI_EMBEDDINGS_NAME}
+  #     - QDRANT_COLLECTION_NAME=${QDRANT_COLLECTION_NAME}
+  #     - QDRANT_API_KEY=${QDRANT_API_KEY}
+  #     - QDRANT_URL=${QDRANT_URL}
+  #     - TIME_ZONE=${TIME_ZONE}
+  #   networks:
+  #     - llm_network
+  
   # ollama:
   #   image: ollama/ollama:latest
   #   ports:

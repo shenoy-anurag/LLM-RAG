@@ -29,10 +29,11 @@ RUN rustc --version
 # RUN poetry install --no-ansi --without dev
 
 COPY requirements.txt .
-# Install all dependencies.
-RUN pip3 install -r requirements.txt --target "/app" -U --no-cache-dir
 
-RUN ls -a /app
+# Install all dependencies.
+RUN pip3 install -r requirements.txt --target "${APP_ROOT}" -U --no-cache-dir
+
+RUN ls -a /app/
 
 # ---
 
@@ -47,9 +48,9 @@ ADD . /app
 
 COPY .env /app
 
-ENV PATH="/app/.venv/bin:$PATH"
+# ENV PATH="/app/.venv/bin:$PATH"
 
 ENV PYTHONPATH=/app
 
 EXPOSE 8000
-CMD ["python3", "-m", "fastapi", "run", "--workers", "4", "app/main.py"]
+CMD ["fastapi", "run", "--workers", "4", "app/main.py"]

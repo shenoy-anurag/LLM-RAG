@@ -1,6 +1,4 @@
-ARG APP_ROOT="/app"
-
-FROM python:3.12.9-alpine AS builder
+FROM public.ecr.aws/lambda/python:3.12.9-alpine AS builder
 
 # Don't buffer `stdout`:
 ENV PYTHONUNBUFFERED=1
@@ -25,31 +23,32 @@ RUN rustc --version
 # # Install Poetry
 # RUN pip install poetry
 # RUN poetry config virtualenvs.in-project true
-# # Install Dependencies
+# Install Dependencies
 # RUN poetry install --no-ansi --without dev
 
 COPY requirements.txt .
-# Install all dependencies.
-RUN pip3 install -r requirements.txt --target "/app" -U --no-cache-dir
+RUN pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}" -U --no-cache-dir
 
-RUN ls -a /app
+RUN ls -a /app/
 
 # ---
 
-FROM python:3.12.9-alpine
-WORKDIR /app
+FROM public.ecr.aws/lambda/python:3.12.9-alpine
+WORKDIR ${LAMBDA_TASK_ROOT}
 
 RUN apk add libgcc
 
-COPY --from=builder /app /app
-# COPY --from=builder /app/.venv/lib/python3.12/site-packages/ /app/.venv/lib/python3.12/site-packages/
-ADD . /app
+COPY . ${LAMBDA_TASK_ROOT}
 
-COPY .env /app
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}" -U --no-cache-dir
+
+COPY --from=builder /app ${LAMBDA_TASK_ROOT}
+COPY --from=builder /app/.venv/lib/python3.12/site-packages/ ${LAMBDA_TASK_ROOT}/.venv/lib/python3.12/site-packages/
 
 ENV PATH="/app/.venv/bin:$PATH"
 
 ENV PYTHONPATH=/app
 
 EXPOSE 8000
-CMD ["python3", "-m", "fastapi", "run", "--workers", "4", "app/main.py"]
+CMD ["fastapi", "run", "--workers", "4", "app/main.py"]
