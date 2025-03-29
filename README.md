@@ -42,6 +42,10 @@ Built the front-end in React, using a modified chatbot-ui template, and the back
 > If you don't know the answer, just say that you don't know. Keep the answer short and concise. Try to use less than 5 sentences.
 
 ## More demo images
+#### Landing Page
+![Demo Screenshot: Landing Page](./docs/images/medquad-ragbot-landing.png)
+#### Gluten and Celiac Disease
+![Demo Screenshot: Gluten and Celiac Disease](./docs/images/medquad-ragbot-in-action.png)
 #### Is a daily glass of Wine Healthy?
 ![Demo Screenshot: Wine](./docs/images/rag-bot-wine.png)
 #### What's wasting

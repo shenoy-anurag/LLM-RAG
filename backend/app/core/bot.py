@@ -67,6 +67,15 @@ def generate(state: State):
     return stream
 
 
+def generate_sync(state: State):
+    docs_content = "\n\n".join(doc.page_content for doc in state["context"])
+    messages = PROMPT.invoke(
+        {"question": state["question"], "context": docs_content})
+    # print(messages)
+    stream = LLM.invoke(messages)
+    return stream
+
+
 def generate_chunks(stream: BaseMessageChunk):
     for chunk in stream:
         res = message_to_dict(chunk)
@@ -99,3 +108,15 @@ def retrieve_and_generate(prompt, tenant=None):
 
     stream = generate(state)
     return stream
+
+
+def retrieve_and_generate_sync(prompt, tenant=None):
+    state = {'question': prompt, 'context': None, 'answer': ''}
+    if tenant:
+        state.update({'tenant': tenant})
+
+    context = retrieve(VECTOR_STORE, state)
+    state['context'] = context['context']
+
+    message = generate_sync(state)
+    return message

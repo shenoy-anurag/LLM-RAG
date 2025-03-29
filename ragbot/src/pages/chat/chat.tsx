@@ -9,7 +9,10 @@ import { Separator } from "@/components/ui/separator";
 import { message } from "@/interfaces/interfaces"
 import { AlertDestructive } from "@/components/custom/error-alert";
 
-// const socket = new WebSocket("ws://localhost:8000/api/v1/chat/ws"); //change to your websocket endpoint
+const YES: string = "yes";
+// const NO: string = "no";
+
+// const socket = new WebSocket("ws://localhost:8000/api/v1/chat/rag/ws"); //change to your websocket endpoint
 
 export function Chat() {
   const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>();
@@ -103,12 +106,23 @@ export function Chat() {
   //   }
   // }
 
-  async function searchQuery(text: string) {
-    const API_URL_CHAT_RAG = import.meta.env.VITE_PUBLIC_API_URL + "/api/v1/chat/rag";
-    // const params = new URLSearchParams();
-    // params.append("user_prompt", text);
-    // const queryString: string = `?${params}`;
-    const response = fetch(API_URL_CHAT_RAG, {
+  function appendToMessages(textPart: string, traceId: string) {
+    setMessages(prev => {
+      const lastMessage = prev[prev.length - 1];
+      const newContent = lastMessage?.role === "assistant"
+        ? lastMessage.content + textPart
+        : textPart;
+
+      const newMessage = { content: newContent, role: "assistant", id: traceId };
+      return lastMessage?.role === "assistant"
+        ? [...prev.slice(0, -1), newMessage]
+        : [...prev, newMessage];
+    });
+  }
+
+  async function getRAGStreamingResponse(text: string) {
+    const API_URL_CHAT_RAG_STREAM = import.meta.env.VITE_PUBLIC_API_URL + "/api/v1/chat/rag/stream";
+    const response = fetch(API_URL_CHAT_RAG_STREAM, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -120,46 +134,66 @@ export function Chat() {
     return response;
   }
 
+  async function getRAGSyncResponse(text: string) {
+    const API_URL_CHAT_RAG_SYNC = import.meta.env.VITE_PUBLIC_API_URL + "/api/v1/chat/rag/sync";
+    try {
+      const response = await fetch(API_URL_CHAT_RAG_SYNC, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: text
+        }),
+      })
+      if (!response.ok) {
+        throw new Error("Failed to fetch llm response");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching llm response:", error);
+    } finally {
+      console.log("Fetched llm response");
+    }
+  }
+
   async function handleSubmit(text?: string) {
     const messageText = text || question;
     setIsLoading(true);
 
     const traceId = uuidv4();
     setMessages(prev => [...prev, { content: messageText, role: "user", id: traceId }]);
-    const response = await searchQuery(messageText);
     setQuestion("");
+    if (import.meta.env.VITE_STREAMING_SUPPORT === YES) {
+      const response = await getRAGStreamingResponse(messageText);
+      if (response && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        setIsLoading(false);
 
-    if (response && response.body) {
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-      setIsLoading(false);
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          done = readerDone;
+          const textPart = decoder.decode(value, { stream: true });
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        const textPart = decoder.decode(value, { stream: true });
+          if (done) break;
 
-        if (done) break;
-
-        // if (textPart.includes("[END]") || done === true) {
-        //   done = true;
-        //   continue;
-        // }
-        setMessages(prev => {
-          const lastMessage = prev[prev.length - 1];
-          const newContent = lastMessage?.role === "assistant"
-            ? lastMessage.content + textPart
-            : textPart;
-
-          const newMessage = { content: newContent, role: "assistant", id: traceId };
-          return lastMessage?.role === "assistant"
-            ? [...prev.slice(0, -1), newMessage]
-            : [...prev, newMessage];
-        });
+          appendToMessages(textPart, traceId);
+        }
+      } else {
+        throw new Error("Failed to fetch llm response");
       }
-    } else {
-      console.log("Ran into some error. Response body is undefined!");
+    }
+    else {
+      const response = await getRAGSyncResponse(messageText);
+      if (response) {
+        setIsLoading(false);
+        appendToMessages(response, traceId);
+      } else {
+        throw new Error("Failed to fetch llm response");
+      }
     }
   }
 
