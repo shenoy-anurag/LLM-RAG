@@ -36,7 +36,7 @@ async def test() -> Any:
 
 
 @router.post("/rag/stream", response_model=Any)
-async def retrieval_augmented_generation(query: UserQuery) -> Any:
+async def retrieval_augmented_generation_stream(query: UserQuery) -> Any:
     """
     Do RAG & Stream.
     """
