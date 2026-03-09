@@ -8,7 +8,7 @@ from langchain_core.messages import BaseMessageChunk, message_to_dict
 
 from app.core.bot import (
     retrieve_and_generate, generate_chunks, generate_text_chunks, 
-    SYSTEM_PROMPT, retrieve_and_generate_sync
+    SYSTEM_PROMPT, retrieve_and_generate_sync, smart_retrieve_and_generate
 )
 from app.models.bot import UserQuery
 
@@ -53,6 +53,17 @@ async def retrieval_augmented_generation(query: UserQuery) -> Any:
     message = retrieve_and_generate_sync(prompt=query.prompt)
 
     return JSONResponse(status_code=status.HTTP_200_OK, content=message.content)
+
+
+@router.post("/rag/smart", response_model=Any)
+async def smart_rag(query: UserQuery) -> Any:
+    """
+    RAG with drug interaction tool-calling.
+    Automatically detects drug-related queries and uses the interaction checker.
+    """
+    result = smart_retrieve_and_generate(prompt=query.prompt)
+
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"answer": result})
 
 
 @router.websocket("/rag/ws")

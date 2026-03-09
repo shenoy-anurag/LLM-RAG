@@ -72,6 +72,8 @@ class Settings(BaseSettings):
     QDRANT_COLLECTION_NAME: str
     QDRANT_API_KEY: str
     QDRANT_URL: str
+    ## OpenFDA
+    FDA_API_KEY: str = ""
 
 
 settings = Settings()  # type: ignore
