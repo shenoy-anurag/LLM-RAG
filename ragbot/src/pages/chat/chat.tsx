@@ -134,34 +134,10 @@ export function Chat() {
     return response;
   }
 
-  // async function getRAGSyncResponse(text: string) {
-  //   const API_URL_CHAT_RAG_SYNC = import.meta.env.VITE_PUBLIC_API_URL + "/api/v1/chat/rag/sync";
-  //   try {
-  //     const response = await fetch(API_URL_CHAT_RAG_SYNC, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         prompt: text
-  //       }),
-  //     })
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch llm response");
-  //     }
-  //     const data = await response.json();
-  //     return data;
-  //   } catch (error) {
-  //     console.error("Error fetching llm response:", error);
-  //   } finally {
-  //     console.log("Fetched llm response");
-  //   }
-  // }
-
-  async function getRAGSmartResponse(text: string) {
-    const API_URL_CHAT_RAG_SMART = import.meta.env.VITE_PUBLIC_API_URL + "/api/v1/chat/rag/smart";
+  async function getRAGSyncResponse(text: string) {
+    const API_URL_CHAT_RAG_SYNC = import.meta.env.VITE_PUBLIC_API_URL + "/api/v1/chat/rag/sync";
     try {
-      const response = await fetch(API_URL_CHAT_RAG_SMART, {
+      const response = await fetch(API_URL_CHAT_RAG_SYNC, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -211,8 +187,7 @@ export function Chat() {
       }
     }
     else {
-      // const response = await getRAGSyncResponse(messageText);
-      const response = await getRAGSmartResponse(messageText);
+      const response = await getRAGSyncResponse(messageText);
       if (response) {
         setIsLoading(false);
         appendToMessages(response, traceId);

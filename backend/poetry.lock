@@ -1984,18 +1984,18 @@ xai = ["langchain-xai"]
 
 [[package]]
 name = "langchain-classic"
-version = "1.0.2"
+version = "1.0.1"
 description = "Building applications with LLMs through composability"
 optional = false
 python-versions = "<4.0.0,>=3.10.0"
 groups = ["main"]
 files = [
-    {file = "langchain_classic-1.0.2-py3-none-any.whl", hash = "sha256:ae3480f488d2cf778f75e59ce0316b336fe2bcd4f8828aeb1aef1e2f26987d7f"},
-    {file = "langchain_classic-1.0.2.tar.gz", hash = "sha256:bbf686613d0051905794f2646ecb6a79fa398db399750a4af039107d93054335"},
+    {file = "langchain_classic-1.0.1-py3-none-any.whl", hash = "sha256:131d83a02bb80044c68fedc1ab4ae885d5b8f8c2c742d8ab9e7534ad9cda8e80"},
+    {file = "langchain_classic-1.0.1.tar.gz", hash = "sha256:40a499684df36b005a1213735dc7f8dca8f5eb67978d6ec763e7a49780864fdc"},
 ]
 
 [package.dependencies]
-langchain-core = ">=1.2.17,<2.0.0"
+langchain-core = ">=1.2.5,<2.0.0"
 langchain-text-splitters = ">=1.1.0,<2.0.0"
 langsmith = ">=0.1.17,<1.0.0"
 pydantic = ">=2.7.4,<3.0.0"
@@ -5510,4 +5510,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = "3.12.10"
-content-hash = "7be607a0479a9f01d86d81b6965621ec550e372c23900e3903b28c3a5ac7a7eb"
+content-hash = "b779ba6433c8de3917270f7be83d66052298b38e303ee56570fff96c1e95d726"
