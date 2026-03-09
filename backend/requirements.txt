@@ -9,7 +9,7 @@ langchain-openai
 langchain-qdrant
 langchain-text-splitters
 langchain_community
-mangum
+mangum==0.19.0
 numpy
 openai
 pydantic
