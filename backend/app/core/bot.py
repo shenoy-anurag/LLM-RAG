@@ -10,7 +10,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.vectorstores import VectorStore
 from langchain_core.messages import BaseMessageChunk, message_to_dict
 from langchain_qdrant import QdrantVectorStore
-from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain_classic.agents import AgentExecutor, create_openai_functions_agent
 
 from app.core.config import settings
 from app.core.tools import DRUG_TOOLS
