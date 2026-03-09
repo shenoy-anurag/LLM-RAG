@@ -17,7 +17,6 @@ PyJWT
 python-dotenv
 pytz
 qdrant-client
-requests
 SQLAlchemy
 sqlmodel
 tiktoken
