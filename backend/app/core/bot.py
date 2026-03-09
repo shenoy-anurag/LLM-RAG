@@ -1,6 +1,7 @@
 import json
 import os
-from pydantic import BaseModel
+import re
+from pydantic import BaseModel, SecretStr
 from typing import List, Dict, Optional
 
 from langchain.chat_models import init_chat_model
@@ -21,7 +22,7 @@ LLM = init_chat_model(
 
 EMBEDDINGS = OpenAIEmbeddings(
     model=settings.OPENAI_EMBEDDINGS_NAME or "text-embedding-3-small",
-    api_key=settings.OPENAI_API_KEY,
+    api_key=SecretStr(settings.OPENAI_API_KEY),
 )
 
 

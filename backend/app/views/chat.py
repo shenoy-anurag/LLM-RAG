@@ -50,7 +50,8 @@ async def retrieval_augmented_generation(query: UserQuery) -> Any:
     """
     Do RAG.
     """
-    message = retrieve_and_generate_sync(prompt=query.prompt)
+    # message = retrieve_and_generate_sync(prompt=query.prompt)
+    result = smart_retrieve_and_generate(prompt=query.prompt)
 
     return JSONResponse(status_code=status.HTTP_200_OK, content=message.content)
 
