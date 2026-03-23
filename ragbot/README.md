@@ -18,12 +18,12 @@ cd chatbot-ui
 
 2. Install dependencies
 ```bash
-npm i
+pnpm install
 ```
 
 3. Start the development server
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## Test Mode

@@ -61,7 +61,7 @@ Built the front-end in React, using a modified chatbot-ui template, and the back
 ### Backend
 1. Change directory to `backend`.
 2. Run `poetry install --no-ansi --without dev`.
-3. Run `poetry shell`.
+3. Run `poetry env activate`.
 4. Start FastAPI server `python3 main.py`.
 
 ### Frontend
