@@ -2,3 +2,5 @@
 *.env.local
 
 .DS_Store
+
+data/

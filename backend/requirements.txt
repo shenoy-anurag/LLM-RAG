@@ -6,6 +6,7 @@ langchain
 langchain-community
 langchain-core
 langchain-openai
+langchain-google-genai
 langchain-qdrant
 langchain-text-splitters
 langchain_community
