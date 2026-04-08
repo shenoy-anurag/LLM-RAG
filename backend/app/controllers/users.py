@@ -30,7 +30,7 @@ def get_user_by_uid(*, session: Session, uid: str) -> User | None:
     return session_user
 
 
-def verify_and_generate_token(*, session: Session, email: str, password: str) -> Token | None:
+def verify_and_generate_token(*, session: Session, email: str, password: str) -> UserPublicToken | Token:
     user = get_user_by_email(session=session, email=email)
     if not user:
         raise ValueError("Incorrect email and password combination!")

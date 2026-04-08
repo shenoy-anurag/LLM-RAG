@@ -4,10 +4,10 @@ from typing import Any, Iterator
 from fastapi import APIRouter, WebSocket, status
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse, JSONResponse
-from langchain_core.messages import BaseMessageChunk, message_to_dict
+from langchain_core.messages import AIMessageChunk, BaseMessageChunk, message_to_dict
 
 from app.core.bot import (
-    retrieve_and_generate, generate_chunks, generate_text_chunks, 
+    retrieve_and_generate, generate_text_chunks, 
     SYSTEM_PROMPT, retrieve_and_generate_sync
 )
 from app.models.bot import UserQuery
@@ -50,8 +50,8 @@ async def retrieval_augmented_generation(query: UserQuery) -> Any:
     """
     Do RAG.
     """
-    # message = retrieve_and_generate_sync(prompt=query.prompt)
-    result = smart_retrieve_and_generate(prompt=query.prompt)
+    message = retrieve_and_generate_sync(prompt=query.prompt)
+    # result = smart_retrieve_and_generate(prompt=query.prompt)
 
     return JSONResponse(status_code=status.HTTP_200_OK, content=message.content)
 
@@ -64,7 +64,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
         stream = retrieve_and_generate(prompt=user_prompt)
 
-        async def generate_text_chunks_socket(stream: Iterator[BaseMessageChunk]):
+        async def generate_text_chunks_socket(stream: Iterator[AIMessageChunk]):
             for chunk in stream:
                 res = message_to_dict(chunk)['data']['content']
                 await websocket.send_text(f"{res}")
@@ -73,7 +73,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 @router.websocket("/echo")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint_echo(websocket: WebSocket):
     await websocket.accept()
     while True:
         user_message = await websocket.receive_text()

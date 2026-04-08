@@ -1,55 +1,26 @@
-ARG APP_ROOT="/app"
+FROM public.ecr.aws/lambda/python:3.12
 
-FROM python:3.12.9-alpine AS builder
+# Copy your app code
+COPY ./app ${LAMBDA_TASK_ROOT}/app
+COPY ./migrations ${LAMBDA_TASK_ROOT}/migrations
+COPY ./alembic.ini ${LAMBDA_TASK_ROOT}
+COPY ./db.sqlite ${LAMBDA_TASK_ROOT}
+# COPY . ${LAMBDA_TASK_ROOT}
+RUN ls -a ${LAMBDA_TASK_ROOT}
 
-# Don't buffer `stdout`:
-ENV PYTHONUNBUFFERED=1
-# Don't create `.pyc` files:
-ENV PYTHONDONTWRITEBYTECODE=1
+# Not a good idea, but okay for quick testing. 
+# Store your environment variables in AWS Secrets or 
+# add them to your Lambda Config.
+COPY .env ${LAMBDA_TASK_ROOT}
 
-WORKDIR /app
-ADD pyproject.toml poetry.lock /app/
-
-RUN apk add build-base libffi-dev curl
-
-# # Rust Compiler Installation
-# Get Rust; NOTE: using sh for better compatibility with other base images
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-# Add .cargo/bin to PATH
-RUN echo '. $HOME/.cargo/env' >> $HOME/.bashrc
-ENV PATH="/root/.cargo/bin:${PATH}"
-# Check cargo is visible
-RUN cargo --help
-RUN rustc --version
-
-# # Install Poetry
-# RUN pip install poetry
-# RUN poetry config virtualenvs.in-project true
-# # Install Dependencies
-# RUN poetry install --no-ansi --without dev
-
+# Export your dependencies as a requirements.txt
+# Use either `pip freeze > requirements.txt` after activate your python env,
+# or poetry export --format requirements.txt --without-hashes --output requirements.txt
 COPY requirements.txt .
-# Install all dependencies.
-RUN pip3 install -r requirements.txt --target "/app" -U --no-cache-dir
 
-RUN ls -a /app
+# Install all dependencies to the Lambda task root folder.
+RUN pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}" -U --no-cache-dir
 
-# ---
-
-FROM python:3.12.9-alpine
-WORKDIR /app
-
-RUN apk add libgcc
-
-COPY --from=builder /app /app
-# COPY --from=builder /app/.venv/lib/python3.12/site-packages/ /app/.venv/lib/python3.12/site-packages/
-ADD . /app
-
-COPY .env /app
-
-ENV PATH="/app/.venv/bin:$PATH"
-
-ENV PYTHONPATH=/app
-
-EXPOSE 8000
-CMD ["python3", "-m", "fastapi", "run", "--workers", "4", "app/main.py"]
+# Start AWS Lambda Handler. This handler manages all communication 
+# between Lambda and your code.
+CMD [ "app.main.handler" ]

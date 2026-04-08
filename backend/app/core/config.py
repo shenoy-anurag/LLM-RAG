@@ -68,6 +68,10 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str
     OPENAI_MODEL_NAME: str
     OPENAI_EMBEDDINGS_NAME: str
+    # ## Google Studio AI
+    # GOOGLE_API_KEY: str
+    # GOOGLE_MODEL_NAME: str
+    # GOOGLE_EMBEDDINGS_NAME: str
     ## Qdrant
     QDRANT_COLLECTION_NAME: str
     QDRANT_API_KEY: str
