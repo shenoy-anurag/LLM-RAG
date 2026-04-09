@@ -1,3 +1,4 @@
+import logging
 import uvicorn
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,9 +8,16 @@ from app.routes import api_router
 from app.core.config import settings
 from app.core.scheduler import lifespan
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
-# function for enabling CORS on web server
+
 def add_cors(app: FastAPI):
+    """Function for enabling CORS on web server
+
+    Args:
+        app (FastAPI): FastAPI app class, the main entrypoint for FastAPI.
+    """
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.all_cors_origins,

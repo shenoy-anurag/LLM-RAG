@@ -28,7 +28,7 @@ const technologies = [
   {
     technology: "Vector DB",
     tool: "Qdrant",
-    version: "v1.13.4",
+    version: "v1.17.1",
   },
   {
     technology: "LLM Framework",
