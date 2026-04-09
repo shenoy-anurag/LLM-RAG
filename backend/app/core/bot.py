@@ -15,7 +15,7 @@ from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, mes
 from langchain_qdrant import QdrantVectorStore
 
 from app.core.config import settings
-from loggers import log_langchain_event_v2
+from app.loggers import log_langchain_event_v2
 
 logger = logging.getLogger(__name__)
 
